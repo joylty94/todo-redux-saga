@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import TextInput from '../components/TextInput';
 import { Button, Input } from 'antd';
 import { TODO_ADD_REQUEST } from '../reducers/todo';
 
