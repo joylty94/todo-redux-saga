@@ -22,7 +22,8 @@ import * as firebase from 'firebase';
 import { 
     TODO_DATA_REQUEST, TODO_DATA_SUCCESS, TODO_DATA_FAILURE,
     TODO_ADD_REQUEST, TODO_ADD_SUCCESS, TODO_ADD_FAILURE,
-    TODO_DELETE_REQUEST, TODO_DELETE_SUCCESS, TODO_DELETE_FAILURE
+    TODO_DELETE_REQUEST, TODO_DELETE_SUCCESS, TODO_DELETE_FAILURE,
+    TODO_UPDATE_REQUEST, TODO_UPDATE_SUCCESS, TODO_UPDATE_FAILURE,
 } from '../reducers/todo'
 
 async function fetchDataAPI () {
@@ -139,10 +140,41 @@ function* watchTodoDelete() {
     yield takeLatest(TODO_DELETE_REQUEST, TodoDelete)
 }
 
+async function todoUpdateAPI(action) {
+    //api 호출
+    const result = await firebase
+        .database()
+        .ref(`todo/${action.id}`)
+        .update({data: action.data});
+
+    //return textData;
+}
+
+function* TodoUpdate(action) {
+    try {
+        const result = yield call(todoUpdateAPI, action);
+        console.log(action.data)
+        yield put({
+            type: TODO_DATA_REQUEST,
+        })
+    } catch (e) {
+        console.log(e)
+        yield put({
+            type: TODO_UPDATE_FAILURE,
+            error: e.response && e.response.data
+        })
+    }
+}
+
+function* watchTodoUpdate() {
+    yield takeLatest(TODO_UPDATE_REQUEST, TodoUpdate)
+}
+
 export default function* todo() {
     yield all([
         fork(watchfetchData),
         fork(watchTodoAdd),
         fork(watchTodoDelete),
+        fork(watchTodoUpdate),
     ]);
 }

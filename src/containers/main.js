@@ -1,23 +1,38 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Input, Card, List } from 'antd';
-import { TODO_ADD_REQUEST, TODO_DATA_REQUEST, TODO_DELETE_REQUEST } from '../reducers/todo';
+import { TODO_ADD_REQUEST, TODO_DATA_REQUEST, TODO_DELETE_REQUEST, TODO_UPDATE_REQUEST  } from '../reducers/todo';
 import AppLayout from '../components/AppLayout';
 
 const Main = () => {
     const [value, setValue] = useState('')
+    const [updateValue, setUpdateValue] = useState('')
     const dispatch = useDispatch()
     const { todo } = useSelector(state => state.todo)
+    const [updateInputIndex, setUpdateInputIndex] = useState(null)
+    const isMountChart = useRef(true);
 
-    useEffect(() => {
+    useEffect(() => {  //componentDidMount
         dispatch({
             type: TODO_DATA_REQUEST
         })
-        setValue('')
-    },[todo.length])
+        
+    },[])
+
+    useEffect(() => { //componentDidUpdate
+        if (isMountChart.current) {
+            isMountChart.current = false;
+        } else {
+            setValue('')
+        }
+    }, [todo.length])
 
     const onChangeValue = useCallback((e) => {
         setValue(e.target.value)
+    }, [])
+
+    const onChangeUpdateValue = useCallback((e) => {
+        setUpdateValue(e.target.value)
     }, [])
 
     const onClickAdd = useCallback((e) => {
@@ -27,6 +42,16 @@ const Main = () => {
             })
     }, [value])
 
+    const onClickUpdate = useCallback((id, e) => (e) => {
+        e.stopPropagation()
+        setUpdateInputIndex(0)
+        dispatch({
+            type: TODO_UPDATE_REQUEST,
+            data: updateValue,
+            id
+        })
+    }, [updateValue])
+
     const onClickDelete = useCallback((item) => () => {
         dispatch({
             type: TODO_DELETE_REQUEST,
@@ -34,6 +59,11 @@ const Main = () => {
             data: item.data
         })
     }, [])
+
+    const handleUpdateIndex = useCallback((index , e) => (e) => {
+        e.stopPropagation()
+            setUpdateInputIndex(index + 1)
+    }, [updateInputIndex])
 
     return (
         <AppLayout>
@@ -43,8 +73,16 @@ const Main = () => {
                     bordered
                     dataSource={todo}
                     renderItem={(item, i) => (
-                        <List.Item actions={[<Button key={`todo_Delete_${i}`} onClick={onClickDelete(item)}>삭제</Button>]}>
-                            {item.data}
+                        <List.Item actions={updateInputIndex && updateInputIndex === (i + 1) ? [] :[<Button key={`todo_Delete_${i}`} onClick={onClickDelete(item)}>삭제</Button>]} onClick={handleUpdateIndex(i)}>
+                            {
+                                updateInputIndex && updateInputIndex === (i + 1) ? (
+                                    <>
+                                        <Input value={updateValue} onChange={onChangeUpdateValue} onPressEnter={onClickUpdate(item.id)} size='large' style={{ width: '93.6%' }} />
+                                        <Button onClick={onClickUpdate(item.id)} size='large'>수정</Button>
+                                    </>
+                                )
+                                    : item.data
+                            }
                         </List.Item>
                     )}
                 />

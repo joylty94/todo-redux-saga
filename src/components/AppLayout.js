@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import { useSelector} from 'react-redux';
 import styled from 'styled-components';
 import { Spin , Alert} from 'antd';
@@ -10,9 +10,9 @@ const Layout = styled.div`
     padding-top: 50px;
 `
 
-const AppLayout = ({ children }) => {
+const AppLayout = memo(({ children }) => {
     const loading = useSelector(state => state.todo.loading)
-    console.log('aaaa', loading)
+
     return (
         <Layout>
             {
@@ -22,6 +22,6 @@ const AppLayout = ({ children }) => {
             }
         </Layout>
     );
-}
+})
 
 export default AppLayout;
