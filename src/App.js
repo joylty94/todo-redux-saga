@@ -7,7 +7,8 @@ import Main from './containers/main';
 import * as firebase from 'firebase';
 import createSagaMiddleware from 'redux-saga';
 import mySaga from './saga';
-
+import dotenv from "dotenv";
+dotenv.config();
 
 function App() {
   const sagaMiddleware = createSagaMiddleware() 
@@ -19,14 +20,16 @@ function App() {
   const store = createStore(reducer, enhancer);
   sagaMiddleware.run(mySaga);
 
+  console.log(process.env.REACT_APP_APP_ID)
+
   var app = firebase.initializeApp({ 
-    apiKey: "AIzaSyDvgm7kMm1iYD7S9wMlp9YGGxl3yIYMZ6M",
-    authDomain: "redux-saga-tutorial.firebaseapp.com",
-    databaseURL: "https://redux-saga-tutorial.firebaseio.com",
-    projectId: "redux-saga-tutorial",
-    storageBucket: "redux-saga-tutorial.appspot.com",
-    messagingSenderId: "621727465052",
-    appId: "1:621727465052:web:1064756c4bbb22c9aff099"
+    apiKey: process.env.REACT_APP_API_KEY,
+    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+    databaseURL: process.env.REACT_APP_DATABASE_URL,
+    projectId: process.env.REACT_APP_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+    appId: process.env.REACT_APP_APP_ID
   });
 
   return (

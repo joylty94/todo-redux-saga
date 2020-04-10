@@ -7,9 +7,12 @@ import AppLayout from '../components/AppLayout';
 const Main = () => {
     const [value, setValue] = useState('')
     const [updateValue, setUpdateValue] = useState('')
+
     const dispatch = useDispatch()
     const { todo } = useSelector(state => state.todo)
+
     const [updateInputIndex, setUpdateInputIndex] = useState(null)
+
     const isMountChart = useRef(true);
 
     useEffect(() => {  //componentDidMount
@@ -23,7 +26,7 @@ const Main = () => {
         if (isMountChart.current) {
             isMountChart.current = false;
         } else {
-            setValue('')
+            setValue('')  // update 
         }
     }, [todo.length])
 
@@ -44,6 +47,7 @@ const Main = () => {
 
     const onClickUpdate = useCallback((id, e) => (e) => {
         e.stopPropagation()
+
         setUpdateInputIndex(0)
         dispatch({
             type: TODO_UPDATE_REQUEST,
@@ -52,7 +56,8 @@ const Main = () => {
         })
     }, [updateValue])
 
-    const onClickDelete = useCallback((item) => () => {
+    const onClickDelete = useCallback((item, e) => (e) => {
+        e.stopPropagation()
         dispatch({
             type: TODO_DELETE_REQUEST,
             id: item.id,
@@ -62,7 +67,7 @@ const Main = () => {
 
     const handleUpdateIndex = useCallback((index , e) => (e) => {
         e.stopPropagation()
-            setUpdateInputIndex(index + 1)
+        setUpdateInputIndex(index + 1)
     }, [updateInputIndex])
 
     return (

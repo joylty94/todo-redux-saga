@@ -9,6 +9,7 @@
     "antd": "^4.1.1",
     "babel-plugin-import": "^1.13.0",
     "customize-cra": "^0.9.1",
+    "dotenv": "^8.2.0",
     "firebase": "^7.13.2",
     "immer": "^6.0.3",
     "react": "^16.13.1",
