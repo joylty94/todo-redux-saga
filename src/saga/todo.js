@@ -10,13 +10,13 @@ import {
 } from 'redux-saga/effects';
 
 // call, fork는 함수를 실행해준다.
-// call은 동기호출  // 서버에 요청을 보내고 응답까지 완료 받음 // 순서대로
-// fork는 비동기 호출  // 서버에 요청을 보내고 비동기식으로 다음 함수 실행  // 비동기식으로
-// put saga의 dispatch
-// all 제너레이터를 묶어줌
-// takeEvery 액션이 dispatch 될 때 마다 실행
-// takeLatest 액션이 여러번 dispatch 될 때 마지막 한번만 실행됨
-// throttle 액션이 dispatch 된후, 지정된 시간만큼 멈춤. // yield throttle(2000, ADD_POST_REQUEST, addPost);
+// call은 동기호출  //서버에 요청을 보내고 응답을 받고 다음 함수 실행
+// fork는 비동기 호출  // 서버에 요청을 보내고 비동기적으로 다음 함수 실행 
+// put : saga의 dispatch
+// all : 제너레이터를 묶어줌
+// takeEvery : 액션이 dispatch 될 때 마다 실행
+// takeLatest : 액션이 여러번 dispatch 될 때 마지막 한번만 실행됨
+// throttle : 액션이 dispatch 된후, 지정된 시간만큼 멈춤. // yield throttle(2000, ADD_POST_REQUEST, addPost);
 
 import * as firebase from 'firebase';
 import { 
@@ -27,7 +27,7 @@ import {
 } from '../reducers/todo'
 
 async function fetchDataAPI () {
-    //api 호출
+    // get api 호출
     const snapshot = await firebase.database().ref('todo').once('value');
     const todoObj = snapshot.val();
     const todo = Object.entries(todoObj).map(([id, todoData]) => ({
@@ -59,7 +59,7 @@ function* watchfetchData() {
 }
 
 async function todoAddAPI(textData) {
-    //api 호출
+    //post api 호출
     const result = await firebase
         .database()
         .ref('todo')
@@ -111,13 +111,11 @@ function* watchTodoAdd() {
 */
 
 async function todoDeleteAPI(id) {
-    //api 호출
+    //delete api 호출
     const result = await firebase
         .database()
         .ref(`todo/${id}`)
         .remove();
-
-    //return textData;
 }
 
 function* TodoDelete(action) {
@@ -141,13 +139,11 @@ function* watchTodoDelete() {
 }
 
 async function todoUpdateAPI(action) {
-    //api 호출
+    // patch api
     const result = await firebase
         .database()
         .ref(`todo/${action.id}`)
         .update({data: action.data});
-
-    //return textData;
 }
 
 function* TodoUpdate(action) {
