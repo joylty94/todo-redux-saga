@@ -44,6 +44,6 @@ table {
 	border-spacing: 0;
 }
 
-.App{
-  padding-top: 50px;
+html, body, #root, .App{
+	height: 100%;
 }

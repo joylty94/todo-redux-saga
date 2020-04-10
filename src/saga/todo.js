@@ -21,18 +21,18 @@ import {
 import * as firebase from 'firebase';
 import { 
     TODO_DATA_REQUEST, TODO_DATA_SUCCESS, TODO_DATA_FAILURE,
-    TODO_ADD_REQUEST, TODO_ADD_SUCCESS, TODO_ADD_FAILURE
+    TODO_ADD_REQUEST, TODO_ADD_SUCCESS, TODO_ADD_FAILURE,
+    TODO_DELETE_REQUEST, TODO_DELETE_SUCCESS, TODO_DELETE_FAILURE
 } from '../reducers/todo'
 
 async function fetchDataAPI () {
     //api 호출
     const snapshot = await firebase.database().ref('todo').once('value');
     const todoObj = snapshot.val();
-    const todo = Object.entries(todoObj).map(([id, company]) => ({
-        ...company,
+    const todo = Object.entries(todoObj).map(([id, todoData]) => ({
+        ...todoData,
         id,
     }));
-
     return todo;
 
 }
@@ -42,7 +42,7 @@ function* fetchData(action) {
         const result = yield call(fetchDataAPI);
         yield put({
             type: TODO_DATA_SUCCESS,
-            data: result.data
+            data: result
         })
     } catch (e) {
         console.log(e)
@@ -109,9 +109,40 @@ function* watchTodoAdd() {
 }
 */
 
-export default function* user() {
+async function todoDeleteAPI(id) {
+    //api 호출
+    const result = await firebase
+        .database()
+        .ref(`todo/${id}`)
+        .remove();
+
+    //return textData;
+}
+
+function* TodoDelete(action) {
+    try {
+        const result = yield call(todoDeleteAPI, action.id);
+        yield put({
+            type: TODO_DELETE_SUCCESS,
+            data: action.data
+        })
+    } catch (e) {
+        console.log(e)
+        yield put({
+            type: TODO_DELETE_FAILURE,
+            error: e.response && e.response.data
+        })
+    }
+}
+
+function* watchTodoDelete() {
+    yield takeLatest(TODO_DELETE_REQUEST, TodoDelete)
+}
+
+export default function* todo() {
     yield all([
         fork(watchfetchData),
         fork(watchTodoAdd),
+        fork(watchTodoDelete),
     ]);
 }
